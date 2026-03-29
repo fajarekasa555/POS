@@ -13,14 +13,22 @@ class StokSeeder extends Seeder
      */
     public function run(): void
     {
-        //
-        for ($i=1; $i<=15; $i++) {
+        $userIds = DB::table('m_user')->pluck('user_id')->toArray();
+        $supplierIds = DB::table('m_supplier')->pluck('supplier_id')->toArray();
+        $barangIds = DB::table('m_barang')->pluck('barang_id')->toArray();
+
+        if (empty($userIds) || empty($supplierIds) || empty($barangIds)) {
+            $this->command->error('Cannot seed t_stok: missing m_user, m_supplier or m_barang rows');
+            return;
+        }
+
+        for ($i = 0; $i < 15; $i++) {
             DB::table('t_stok')->insert([
-                'supplier_id' => rand(1,3),
-                'barang_id' => $i,
-                'user_id' => 1,
+                'supplier_id' => $supplierIds[array_rand($supplierIds)],
+                'barang_id' => $barangIds[array_rand($barangIds)],
+                'user_id' => $userIds[array_rand($userIds)],
                 'stok_tanggal' => now(),
-                'stok_jumlah' => rand(10,50)
+                'stok_jumlah' => rand(10, 50),
             ]);
         }
     }
